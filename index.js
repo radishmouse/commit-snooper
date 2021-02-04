@@ -1,33 +1,45 @@
 const { repos, token } = require('./config');
-const differenceInHours = require('date-fns/differenceInHours');
+const differenceInMinutes = require('date-fns/differenceInMinutes');
 const { Octokit } = require("@octokit/core");
 const octokit = new Octokit({ auth: token });
+
+const validEvents = [
+  'PushEvent',
+  'PullRequestEvent',
+  'CreateEvent'
+];
 
 const pprint = (data) => {
   console.log(JSON.stringify(data, null, 4));
 };
 
 const fmt = date => {
-  try {
-    return differenceInHours(new Date(date), new Date()) + ' hours';
+  // try {
+  const diff = Math.abs(differenceInMinutes(new Date(date), new Date()));
+  let str = `${diff} minutes ago`;
+  str += ` (${(diff/60).toFixed(2)} hours)`;
+  return str;
     // return formatDistance(new Date(date), new Date(), { addSuffix: true});
-  } catch {
-    return date;
-  }
+  // } catch {
+    // return date;
+  // }
 
 };
 
 const mostRecent = (d1, d2) => d1 > d2 ? d1 : d2;
 
-
-const report = repo => {
-  octokit.request(`GET /repos/${repo}/events`, {
+const getEvents = repo => {
+  return octokit.request(`GET /repos/${repo}/events`, {
+    per_page: 100,
     headers: {
       'Accept': 'application/vnd.github.cloak-preview+json'
     }  
   }).then(({data}) => {
     
     const info = data.reduce((acc, event) => {
+
+      if (!validEvents.includes(event.type)) return acc; 
+      
       if (!acc[event.actor.login]) {
         acc[event.actor.login] = {
           count: 1,
@@ -50,13 +62,18 @@ const report = repo => {
     for (let contributor in info) {
       info[contributor].last = fmt(info[contributor].last);
     }
-    
-    console.log(repo);
-    pprint(info);
-    // pprint(formatted);
-    console.log('============');
+
+    const summary = {
+      name: repo,
+      contributions: info
+    };
+    return summary;
   });
 
 };
 
-repos.forEach(report);
+const pArray = repos.map(getEvents);
+Promise.all(pArray).then(info => {
+    pprint(info);
+    console.log('============');  
+});
