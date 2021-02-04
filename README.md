@@ -1,6 +1,6 @@
 # Snoop on repos
 
-Find out who commits and when.
+Find out who is active with a repo and when.
 
 Output looks like:
 
