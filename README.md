@@ -7,12 +7,17 @@ Output looks like:
 ```
 $ node index.js 
 radishmouse/commit-snooper
-{
-    "radishmouse": {
-        "count": 3,
-        "last": "0 hours"
+[
+    {
+        "name": "radishmouse/commit-snooper",
+        "contributions": {
+            "radishmouse": {
+                "count": 4,
+                "last": "216 minutes ago (3.60 hours)"
+            }
+        }
     }
-}
+]
 ============
 ```
 
