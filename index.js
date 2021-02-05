@@ -82,5 +82,4 @@ const getEvents = repo => {
 const pArray = repos.map(getEvents);
 Promise.all(pArray).then(info => {
     pprint(info);
-    console.log('============');  
 });
