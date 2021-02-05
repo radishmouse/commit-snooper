@@ -12,8 +12,9 @@ radishmouse/commit-snooper
         "name": "radishmouse/commit-snooper",
         "contributions": {
             "radishmouse": {
-                "count": 4,
-                "last": "216 minutes ago (3.60 hours)"
+                "count": 6,
+                "last": "1005 minutes ago (16.75 hours)",
+                "type": "PushEvent"
             }
         }
     }

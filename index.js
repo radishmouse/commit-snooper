@@ -35,7 +35,10 @@ const getEvents = repo => {
       'Accept': 'application/vnd.github.cloak-preview+json'
     }  
   }).then(({data}) => {
-    
+    // if (process.env.DEBUG === "true") {
+      // pprint(data[0]);
+      // return [];
+    // }
     const info = data.reduce((acc, event) => {
 
       if (!validEvents.includes(event.type)) return acc; 
@@ -43,14 +46,18 @@ const getEvents = repo => {
       if (!acc[event.actor.login]) {
         acc[event.actor.login] = {
           count: 1,
-          last: event.created_at
+          last: event.created_at,
+          type: event.type
         };      
       } else {
+        let last = mostRecent(event.created_at, acc[event.actor.login].last);
         acc[event.actor.login] = {
           count: acc[event.actor.login].count + 1,
-          last: mostRecent(event.created_at, acc[event.actor.login].last)
+          last,
+          type: last === event.created_at ? event.type : acc[event.actor.login].type
         };
       }
+      
       return acc;
     }, {});
 
